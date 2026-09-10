@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobilink Hub | Central Dashboard</title>
+    <!-- Modern Typography: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Login Screen -->
+    <div id="login-view" class="view active">
+        <div class="glass-panel login-card fade-in">
+            <div class="brand">
+                <div class="logo-icon">🌐</div>
+                <h1>Mobilink Hub</h1>
+            </div>
+            <p class="subtitle">Secure Admin Gateway</p>
+            <form id="login-form">
+                <div class="input-group">
+                    <label>Admin ID</label>
+                    <input type="text" id="admin-user" placeholder="Enter admin ID" value="admin" autocomplete="off" />
+                </div>
+                <div class="input-group">
+                    <label>PIN Code</label>
+                    <input type="password" id="admin-pin" placeholder="••••" value="admin123" />
+                </div>
+                <button type="submit" class="btn-primary">Initialize Uplink</button>
+                <div id="login-error" class="error-msg"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-view" class="view">
+        <header class="glass-header slide-down">
+            <div class="header-brand">
+                <div class="logo-icon small">🌐</div>
+                <h2>Mobilink Hub</h2>
+                <span class="pulse-indicator"></span><span class="live-text">LIVE</span>
+            </div>
+            <div class="header-actions">
+                <button id="logout-btn" class="btn-secondary">Terminate Session</button>
+            </div>
+        </header>
+
+        <main class="dashboard-grid fade-in-up">
+            <!-- KPIs -->
+            <div class="glass-panel kpi-card">
+                <h3>System Throughput</h3>
+                <div class="kpi-value" id="kpi-transactions">0</div>
+                <p class="kpi-label">Transactions Today</p>
+                <div class="trend positive">↑ Live Tracking</div>
+            </div>
+
+            <div class="glass-panel kpi-card">
+                <h3>Active Network</h3>
+                <div class="kpi-value" id="kpi-shifts">0</div>
+                <p class="kpi-label">Connected Booths</p>
+                <div class="trend">Running Shifts</div>
+            </div>
+            
+            <div class="glass-panel kpi-card">
+                <h3>Queue Status</h3>
+                <div class="kpi-value" id="kpi-queue">Optimal</div>
+                <p class="kpi-label">No Bottlenecks</p>
+            </div>
+
+            <!-- SIM Health Monitor -->
+            <div class="glass-panel main-panel">
+                <div class="panel-header">
+                    <h3>SIM Channel Health Matrix</h3>
+                    <button id="refresh-btn" class="icon-btn">↻</button>
+                </div>
+                <div class="sim-grid" id="sim-container">
+                    <!-- Injected via JS -->
+                    <div class="loading-shimmer">Initializing telemetry...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

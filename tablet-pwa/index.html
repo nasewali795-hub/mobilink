@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mobile Money Gateway - Booth Tablet</title>
+    <meta name="description" content="Booth operator interface for mobile money transactions">
+    <meta name="theme-color" content="#050508">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen">
+            <div class="container glass-panel">
+                <div class="logo">💰</div>
+                <h1>Mobile Money Gateway</h1>
+                <p class="subtitle">Booth Operator Login</p>
+                <div class="pin-input-container">
+                    <div class="pin-dots" id="pin-dots">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                    <input type="password" id="pin-input" maxlength="4" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+                </div>
+                <div class="numpad" id="numpad">
+                    <button data-key="1">1</button>
+                    <button data-key="2">2</button>
+                    <button data-key="3">3</button>
+                    <button data-key="4">4</button>
+                    <button data-key="5">5</button>
+                    <button data-key="6">6</button>
+                    <button data-key="7">7</button>
+                    <button data-key="8">8</button>
+                    <button data-key="9">9</button>
+                    <button data-key="clear" class="secondary">Clear</button>
+                    <button data-key="0">0</button>
+                    <button data-key="backspace" class="secondary">⌫</button>
+                </div>
+                <button id="login-btn" class="primary-btn" disabled>Login</button>
+                <p id="login-error" class="error-message"></p>
+            </div>
+        </div>
+
+        <!-- Shift Start Screen -->
+        <div id="shift-start-screen" class="screen hidden">
+            <div class="container glass-panel">
+                <h2>Open New Shift</h2>
+                <div class="info-card">
+                    <p><strong>Operator:</strong> <span id="operator-name">-</span></p>
+                    <p><strong>Booth:</strong> <span id="booth-name">-</span></p>
+                    <p><strong>Date:</strong> <span id="shift-date">-</span></p>
+                </div>
+                <div class="form-group">
+                    <label for="starting-cash">Starting Cash (K)</label>
+                    <input type="number" id="starting-cash" inputmode="decimal" placeholder="0.00" step="0.01">
+                </div>
+                <div class="numpad" id="cash-numpad">
+                    <button data-key="1">1</button>
+                    <button data-key="2">2</button>
+                    <button data-key="3">3</button>
+                    <button data-key="4">4</button>
+                    <button data-key="5">5</button>
+                    <button data-key="6">6</button>
+                    <button data-key="7">7</button>
+                    <button data-key="8">8</button>
+                    <button data-key="9">9</button>
+                    <button data-key=".">.</button>
+                    <button data-key="0">0</button>
+                    <button data-key="backspace" class="secondary">⌫</button>
+                </div>
+                <div class="button-group">
+                    <button id="cancel-shift-btn" class="secondary-btn">Cancel</button>
+                    <button id="open-shift-btn" class="primary-btn">Open Shift</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction Dashboard -->
+        <div id="transaction-screen" class="screen hidden">
+            <div class="container glass-panel">
+                <div class="header-bar">
+                    <div class="shift-info">
+                        <span id="shift-status" class="badge badge-active">Shift Active</span>
+                        <span id="operator-display" class="operator-name">-</span>
+                    </div>
+                    <button id="close-shift-btn" class="text-btn">Close Shift</button>
+                </div>
+
+                <div class="transaction-form">
+                    <div class="form-section">
+                        <label>Network</label>
+                        <div class="toggle-group" id="network-toggle">
+                            <button data-network="MTN" class="toggle-btn active">MTN</button>
+                            <button data-network="Airtel" class="toggle-btn">Airtel</button>
+                            <button data-network="Zamtel" class="toggle-btn">Zamtel</button>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <label>Transaction Type</label>
+                        <div class="toggle-group" id="type-toggle">
+                            <button data-type="deposit" class="toggle-btn">Deposit</button>
+                            <button data-type="withdraw" class="toggle-btn active">Withdraw</button>
+                            <button data-type="balance" class="toggle-btn">Balance</button>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <label for="customer-phone">Customer Phone</label>
+                        <input type="tel" id="customer-phone" inputmode="tel" placeholder="0977 XXX XXX" maxlength="13">
+                    </div>
+
+                    <div class="form-section">
+                        <label for="amount">Amount (K)</label>
+                        <input type="number" id="amount" inputmode="decimal" placeholder="0.00" step="0.01">
+                    </div>
+
+                    <div class="fee-display">
+                        <div class="fee-row">
+                            <span>Fee:</span>
+                            <span id="fee-amount">K 0.00</span>
+                        </div>
+                        <div class="fee-row total">
+                            <span>Total:</span>
+                            <span id="total-amount">K 0.00</span>
+                        </div>
+                    </div>
+
+                    <button id="process-btn" class="primary-btn large" disabled>Process Transaction</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Overlay -->
+        <div id="status-overlay" class="overlay hidden">
+            <div class="status-container glass-panel">
+                <div id="status-icon" class="status-icon"></div>
+                <h2 id="status-title">Processing</h2>
+                <p id="status-message">Please wait...</p>
+                <div id="status-details" class="status-details"></div>
+                <div id="queue-info" class="queue-info hidden">
+                    <div class="progress-bar">
+                        <div id="queue-progress" class="progress-fill"></div>
+                    </div>
+                    <p id="queue-text">Position in queue: #1</p>
+                </div>
+                <div class="button-group" style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                    <button id="print-receipt-btn" class="secondary-btn hidden">Print Receipt</button>
+                    <button id="status-close-btn" class="primary-btn hidden">New Transaction</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reconciliation Screen -->
+        <div id="reconciliation-screen" class="screen hidden">
+            <div class="container glass-panel">
+                <h2>Close Shift</h2>
+                <div class="report-card">
+                    <h3>Reconciliation Report</h3>
+                    <div class="report-row">
+                        <span>Starting Cash:</span>
+                        <span id="report-starting">K 0.00</span>
+                    </div>
+                    <div class="report-row">
+                        <span>Cash-Ins (+):</span>
+                        <span id="report-cashin" class="positive">K 0.00</span>
+                    </div>
+                    <div class="report-row">
+                        <span>Cash-Outs (-):</span>
+                        <span id="report-cashout" class="negative">K 0.00</span>
+                    </div>
+                    <div class="report-row total">
+                        <span>Expected Closing:</span>
+                        <span id="report-expected">K 0.00</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="actual-cash">Actual Cash Count (K)</label>
+                    <input type="number" id="actual-cash" inputmode="decimal" placeholder="0.00" step="0.01">
+                </div>
+                <div class="numpad" id="reconcile-numpad">
+                    <button data-key="1">1</button>
+                    <button data-key="2">2</button>
+                    <button data-key="3">3</button>
+                    <button data-key="4">4</button>
+                    <button data-key="5">5</button>
+                    <button data-key="6">6</button>
+                    <button data-key="7">7</button>
+                    <button data-key="8">8</button>
+                    <button data-key="9">9</button>
+                    <button data-key=".">.</button>
+                    <button data-key="0">0</button>
+                    <button data-key="backspace" class="secondary">⌫</button>
+                </div>
+                <div id="discrepancy-display" class="discrepancy hidden">
+                    <span id="discrepancy-text"></span>
+                </div>
+                <div class="button-group">
+                    <button id="cancel-reconcile-btn" class="secondary-btn">Cancel</button>
+                    <button id="confirm-close-btn" class="primary-btn">Close Shift</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Admin Dashboard Screen -->
+        <div id="admin-dashboard-screen" class="screen hidden">
+            <div class="container glass-panel admin-container" style="max-width: 900px;">
+                <div class="header-bar">
+                    <h2>Admin Dashboard</h2>
+                    <button id="admin-logout-btn" class="text-btn">Logout</button>
+                </div>
+                
+                <div class="admin-tabs">
+                    <button data-tab="booths" class="tab-btn active">Booths</button>
+                    <button data-tab="operators" class="tab-btn">Operators</button>
+                    <button data-tab="audit" class="tab-btn">Audit Trail</button>
+                    <button data-tab="config" class="tab-btn">Settings</button>
+                </div>
+                
+                <!-- Booths Tab -->
+                <div class="admin-tab-content" id="tab-booths">
+                    <div class="table-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3>Booth Management</h3>
+                        <button id="refresh-booths-btn" class="secondary-btn" style="width: auto; min-height: 40px; padding: 10px;">Refresh</button>
+                    </div>
+                    <div class="table-container" style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px;">
+                        <table id="booths-table" class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Booth rows go here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Operators Tab -->
+                <div class="admin-tab-content hidden" id="tab-operators">
+                    <div class="table-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3>Operator Management</h3>
+                        <button id="refresh-operators-btn" class="secondary-btn" style="width: auto; min-height: 40px; padding: 10px;">Refresh</button>
+                    </div>
+                    <div class="table-container" style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px;">
+                        <table id="operators-table" class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Operator rows go here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Audit Trail Tab -->
+                <div class="admin-tab-content hidden" id="tab-audit">
+                    <div class="table-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3>Audit Trail</h3>
+                        <button id="refresh-audit-btn" class="secondary-btn" style="width: auto; min-height: 40px; padding: 10px;">Refresh</button>
+                    </div>
+                    <div class="table-container" style="overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px;">
+                        <table id="audit-table" class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Admin ID</th>
+                                    <th>Action</th>
+                                    <th>Target Booth</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Audit rows go here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Config Tab -->
+                <div class="admin-tab-content hidden" id="tab-config">
+                    <h3>System Configuration</h3>
+                    <div class="form-group">
+                        <label>MTN Transaction Limit (K)</label>
+                        <input type="number" id="limit-mtn" value="5000">
+                    </div>
+                    <div class="form-group">
+                        <label>Airtel Transaction Limit (K)</label>
+                        <input type="number" id="limit-airtel" value="5000">
+                    </div>
+                    <button id="save-config-btn" class="primary-btn">Save Configuration</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/transactions.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

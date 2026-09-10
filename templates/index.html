@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriFin - Hierarchical Microfinance Portal</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- 1. DEDICATED LOGIN SCREEN -->
+    <div id="login-view" class="login-wrapper">
+        <div class="login-bg-glow glow-1"></div>
+        <div class="login-bg-glow glow-2"></div>
+        
+        <div class="login-card glass">
+            <div class="login-header">
+                <div class="login-brand-icon">
+                    <i class="fa-solid fa-wheat-awn"></i>
+                </div>
+                <h2>Welcome to AgriFin</h2>
+                <p>Hierarchical Microfinance & Agricultural Loan Portal</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="handleLoginSubmit(event)" class="login-form">
+                <div id="login-error" class="login-error-msg" style="display: none;">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span id="login-error-text">Invalid credentials</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-username"><i class="fa-solid fa-user"></i> Username</label>
+                    <input type="text" id="login-username" placeholder="Enter your username" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
+                        <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility()"><i class="fa-solid fa-eye" id="pwd-eye"></i></button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-emerald btn-block" id="btn-login-submit">
+                    <span>Sign In</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Quick Demo Accounts Switcher -->
+            <div class="demo-accounts-section">
+                <div class="demo-divider"><span>OR QUICK LOGIN WITH DEMO ROLE</span></div>
+                <div class="demo-chips">
+                    <button class="demo-chip chip-hq" onclick="fillDemoCredentials('hq_admin', 'hq123')">
+                        <i class="fa-solid fa-building-columns"></i>
+                        <span>HQ Admin</span>
+                    </button>
+                    <button class="demo-chip chip-agent" onclick="fillDemoCredentials('agent2', 'pass456')">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>Agent 2 (Shop B)</span>
+                    </button>
+                    <button class="demo-chip chip-agent" onclick="fillDemoCredentials('agent3', 'pass789')">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>Agent 3 (Shop C)</span>
+                    </button>
+                    <button class="demo-chip chip-agent" onclick="fillDemoCredentials('agent1', 'pass123')">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>Agent 1 (Shop A)</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="login-footer">
+                <i class="fa-solid fa-shield-halved"></i> 256-Bit Encrypted JWT RBAC Security
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN APPLICATION DASHBOARD -->
+    <div id="dashboard-view" class="app-container" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-wheat-awn"></i></div>
+                <div class="brand-text">
+                    <h2>AgriFin</h2>
+                    <span>Microfinance Portal</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-link active" onclick="switchTab('dashboard-home-tab', this)" id="nav-dashboard-home-link">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </button>
+                <button class="nav-link" onclick="switchTab('hq-shops-tab', this)" id="nav-hq-shops-link" data-hq-only="true">
+                    <i class="fa-solid fa-store"></i> Shops
+                </button>
+                <button class="nav-link" onclick="switchTab('hq-inventory-tab', this)" id="nav-hq-inventory-link" data-hq-only="true">
+                    <i class="fa-solid fa-boxes-stacked"></i> Inventory
+                </button>
+                <button class="nav-link" onclick="switchTab('farmers-tab', this)" id="nav-farmers-link">
+                    <i class="fa-solid fa-users"></i> Farmers Database
+                </button>
+                <button class="nav-link" onclick="switchTab('fertilizer-tab', this)">
+                    <i class="fa-solid fa-seedling"></i> Fertilizer Loans
+                </button>
+                <button class="nav-link" onclick="switchTab('asset-tab', this)">
+                    <i class="fa-solid fa-tractor"></i> Asset Finance
+                </button>
+                <button class="nav-link" onclick="switchTab('cash-tab', this)">
+                    <i class="fa-solid fa-hand-holding-dollar"></i> Cash Loans
+                </button>
+                <button class="nav-link" onclick="switchTab('applications-tab', this)" id="nav-applications-link">
+                    <i class="fa-solid fa-file-lines"></i> Applications
+                </button>
+                <button class="nav-link" onclick="switchTab('hq-disbursement-tab', this)" id="nav-disbursement-link">
+                    <i class="fa-solid fa-money-bill-transfer"></i> Disbursement
+                </button>
+                <button class="nav-link" onclick="switchTab('hq-repayments-tab', this)" id="nav-repayments-link">
+                    <i class="fa-solid fa-rotate-left"></i> Repayments & Reconciliation
+                </button>
+                <button class="nav-link" onclick="switchTab('hq-products-tab', this)" id="nav-products-link">
+                    <i class="fa-solid fa-tags"></i> Products & Pricing
+                </button>
+                <button class="nav-link" onclick="switchTab('hq-reporting-tab', this)" id="nav-reporting-link">
+                    <i class="fa-solid fa-chart-line"></i> Reporting & Analytics
+                </button>
+                <button class="nav-link" onclick="switchTab('hq-admin-tab', this)" id="nav-admin-link">
+    <i class="fa-solid fa-gear"></i> Settings & Admin
+</button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-badge" id="current-user-badge">
+                    <div class="user-avatar" id="user-avatar">HQ</div>
+                    <div class="user-info">
+                        <h4 id="user-display-name">Headquarters Admin</h4>
+                        <span id="user-role-tag" class="role-tag role-hq">HQ Role</span>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-logout" onclick="logout()" title="Sign Out">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                </button>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+                    <span id="theme-label">Dark Mode</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h1 id="page-title">Dashboard</h1>
+                    <p id="page-subtitle">Statistics, alerts, and notifications</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-cyan" id="btn-add-client" onclick="openModal('add-client-modal')">
+                        <i class="fa-solid fa-user-plus"></i> Add Farmer
+                    </button>
+                    <button class="btn btn-amber" id="btn-issue-loan" onclick="openModal('issue-loan-modal')">
+                        <i class="fa-solid fa-circle-plus"></i> Issue Loan
+                    </button>
+                    <button class="btn btn-secondary" onclick="logout()" title="Switch Account">
+                        <i class="fa-solid fa-user-gear"></i> Switch User
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Home View -->
+            <div id="dashboard-home-tab" class="tab-view active">
+                <!-- Dashboard Summary KPI Cards -->
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+                    <button class="btn btn-primary" onclick="openPortfolioReport()"><i class="fa-solid fa-chart-pie"></i> Portfolio Report</button>
+                </div>
+<section class="kpi-grid">
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon icon-farmers"><i class="fa-solid fa-people-roof"></i></div>
+                        <div class="kpi-content">
+                            <span>Total Farmers</span>
+                            <h3 id="stat-total-farmers">0</h3>
+                            <small class="kpi-subtext" id="stat-scope-desc">Scope: All Regions</small>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon icon-fertilizer"><i class="fa-solid fa-wheat-awn"></i></div>
+                        <div class="kpi-content">
+                            <span>Fertilizer Loans</span>
+                            <h3 id="stat-fert-count">0</h3>
+                            <small class="kpi-subtext"><strong id="stat-maize-remaining">0</strong> / <span id="stat-maize-expected">0</span> Maize Bags Remaining</small>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon icon-asset"><i class="fa-solid fa-truck-pickup"></i></div>
+                        <div class="kpi-content">
+                            <span>Asset Finance</span>
+                            <h3 id="stat-asset-count">0</h3>
+                            <small class="kpi-subtext">ZMW <strong id="stat-asset-balance">0.00</strong> Outstanding</small>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon icon-cash"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="kpi-content">
+                            <span>Cash Loans</span>
+                            <h3 id="stat-cash-count">0</h3>
+                            <small class="kpi-subtext">ZMW <strong id="stat-cash-balance">0.00</strong> Outstanding</small>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass" id="kpi-total-shops" data-hq-only>
+                        <div class="kpi-icon icon-shops"><i class="fa-solid fa-store"></i></div>
+                        <div class="kpi-content">
+                            <span>Total Shops</span>
+                            <h3 id="stat-total-shops">0</h3>
+                            <small class="kpi-subtext">Across all regions</small>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass" id="kpi-total-provinces" data-hq-only>
+                        <div class="kpi-icon icon-provinces"><i class="fa-solid fa-map"></i></div>
+                        <div class="kpi-content">
+                            <span>Provinces</span>
+                            <h3 id="stat-total-provinces">0</h3>
+                            <small class="kpi-subtext">Regions covered</small>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass" id="kpi-total-districts" data-hq-only>
+                        <div class="kpi-icon icon-districts"><i class="fa-solid fa-building-flag"></i></div>
+                        <div class="kpi-content">
+                            <span>Districts</span>
+                            <h3 id="stat-total-districts">0</h3>
+                            <small class="kpi-subtext">Active districts</small>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass" id="kpi-total-villages" data-hq-only>
+                        <div class="kpi-icon icon-villages"><i class="fa-solid fa-tree"></i></div>
+                        <div class="kpi-content">
+                            <span>Villages</span>
+                            <h3 id="stat-total-villages">0</h3>
+                            <small class="kpi-subtext">Service areas</small>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass" id="kpi-total-inventory" data-hq-only>
+                        <div class="kpi-icon icon-inventory"><i class="fa-solid fa-boxes-stacked"></i></div>
+                        <div class="kpi-content">
+                            <span>Inventory Items</span>
+                            <h3 id="stat-total-inventory">0</h3>
+                            <small class="kpi-subtext"><strong id="stat-total-inventory-qty">0</strong> total units</small>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass" id="kpi-total-agents" data-hq-only>
+                        <div class="kpi-icon icon-agents"><i class="fa-solid fa-user-tie"></i></div>
+                        <div class="kpi-content">
+                            <span>Field Agents</span>
+                            <h3 id="stat-total-agents">0</h3>
+                            <small class="kpi-subtext">Active agents</small>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass" id="kpi-total-loans" data-hq-only>
+                        <div class="kpi-icon icon-loans"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                        <div class="kpi-content">
+                            <span>Total Loans</span>
+                            <h3 id="stat-total-loans">0</h3>
+                            <small class="kpi-subtext">All categories</small>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Alerts & Notifications Row -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px;">
+                    <!-- Alerts Panel -->
+                    <div class="section-card glass">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-triangle-exclamation"></i> Alerts</h3>
+                        </div>
+                        <div id="dashboard-alerts-list" style="display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Notifications Panel -->
+                    <div class="section-card glass">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-bell"></i> Notifications</h3>
+                        </div>
+                        <div id="dashboard-notifications-list" style="display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content Views -->
+
+            <!-- 1. Shops Management View (HQ Only) -->
+            <div id="hq-shops-tab" class="tab-view" data-hq-tab>
+                <div class="section-card glass">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-store"></i> Shops Directory</h3>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <div class="table-search">
+                                <i class="fa-solid fa-search"></i>
+                                <input type="text" id="shop-search-input" placeholder="Search by shop, agent, province, district..." onkeyup="filterShopsDirectory()">
+                            </div>
+                            <button class="btn btn-emerald btn-sm" id="btn-card-add-shop" onclick="openModal('add-shop-modal')">
+                                <i class="fa-solid fa-plus"></i> Add Shop
+                            </button>
+                        </div>
+                    </div>
+                    <div class="shops-hierarchy-container" id="shops-hierarchy-container">
+                        <!-- Grouped by Province -> District -> Village -> Shop Cards rendered by JS -->
+                    </div>
+                    <div id="shops-pagination" style="display: flex; justify-content: center; align-items: center; gap: 12px; padding: 20px 0 10px;">
+                        <button class="btn btn-sm btn-secondary" id="shops-prev-btn" onclick="shopsPrevPage()">
+                            <i class="fa-solid fa-chevron-left"></i> Previous
+                        </button>
+                        <span id="shops-page-info" style="font-size: 13px; color: var(--text-muted);">Page 1 of 1</span>
+                        <button class="btn btn-sm btn-secondary" id="shops-next-btn" onclick="shopsNextPage()">
+                            Next <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Inventory Management View (HQ Only) -->
+            <div id="hq-inventory-tab" class="tab-view" data-hq-tab>
+                <!-- KPI Overview -->
+                <div class="kpi-grid" style="margin-bottom: 18px;">
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon icon-inventory"><i class="fa-solid fa-boxes-stacked"></i></div>
+                        <div class="kpi-content">
+                            <span>Total Items</span>
+                            <h3 id="hq-inv-total-items">0</h3>
+                            <small class="kpi-subtext">SKUs in catalog</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon icon-fertilizer"><i class="fa-solid fa-warehouse"></i></div>
+                        <div class="kpi-content">
+                            <span>HQ Stock Balance</span>
+                            <h3 id="hq-inv-hq-balance">0</h3>
+                            <small class="kpi-subtext">Physical stock at HQ</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon icon-shops"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                        <div class="kpi-content">
+                            <span>Allocated to Shops</span>
+                            <h3 id="hq-inv-allocated">0</h3>
+                            <small class="kpi-subtext">Reserved for distribution</small>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon icon-cash"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="kpi-content">
+                            <span>Available Stock</span>
+                            <h3 id="hq-inv-available">0</h3>
+                            <small class="kpi-subtext">Ready for allocation</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Actions -->
+                <div class="section-card glass" style="margin-bottom: 18px;">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-gear"></i> Inventory Actions</h3>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <button class="btn btn-sm btn-emerald" onclick="openModal('add-hq-stock-modal')">
+                                <i class="fa-solid fa-plus"></i> Add Stock
+                            </button>
+                            <button class="btn btn-sm btn-cyan" onclick="openModal('stock-management-modal')">
+                                <i class="fa-solid fa-sliders"></i> Manage Stock
+                            </button>
+                            <button class="btn btn-sm btn-amber" onclick="openInventoryAdjustModal()">
+                                <i class="fa-solid fa-pen-to-square"></i> Adjust Stock
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div class="section-card glass" style="margin-bottom: 18px;">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-triangle-exclamation"></i> Inventory Alerts</h3>
+                    </div>
+                    <div id="hq-inventory-alerts" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Master Inventory Table -->
+                <div class="section-card glass" style="margin-bottom: 18px;">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-list"></i> Master Inventory</h3>
+                        <div class="table-search">
+                            <i class="fa-solid fa-search"></i>
+                            <input type="text" id="hq-inv-search" placeholder="Search by item name or category..." onkeyup="filterHqInventoryTable()">
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Item ID</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Unit</th>
+                                    <th>HQ Stock</th>
+                                    <th>Allocated</th>
+                                    <th>Available</th>
+                                    <th>Cost Price</th>
+                                    <th>Loan Value</th>
+                                    <th>Selling Price</th>
+                                    <th>Supplier</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hq-inventory-table-body">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="section-card glass" style="margin-bottom: 18px;">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-clock-rotate-left"></i> Transaction History</h3>
+                        <div class="table-search">
+                            <i class="fa-solid fa-search"></i>
+                            <input type="text" id="hq-inv-tx-search" placeholder="Search transactions..." onkeyup="filterHqInventoryTransactions()">
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Item</th>
+                                    <th>Type</th>
+                                    <th>Qty</th>
+                                    <th>Shop</th>
+                                    <th>Created By</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hq-inventory-tx-table-body">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Farmers Database View -->
+            <div id="farmers-tab" class="tab-view">
+                <div class="section-card glass">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-users-gear"></i> Registered Farmers Database</h3>
+                        <div class="table-search">
+                            <i class="fa-solid fa-search"></i>
+                            <input type="text" id="farmer-search-input" placeholder="Search farmer name or phone..." onkeyup="filterFarmersTable()">
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table" id="farmers-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Farmer Name</th>
+                                    <th>Phone / NRC</th>
+                                    <th>Shop</th>
+                                    <th>Village</th>
+                                    <th>District</th>
+                                    <th>Registered Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="farmers-table-body">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Fertilizer Loans View -->
+            <div id="fertilizer-tab" class="tab-view">
+                <div class="section-card glass">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-seedling"></i> Fertilizer In-Kind Loans</h3>
+                        <button class="btn btn-sm btn-emerald" onclick="openIssueModal('fertilizer')"><i class="fa-solid fa-plus"></i> New Fertilizer Loan</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Loan ID</th>
+                                    <th></th>
+                                    <th>Farmer Name</th>
+                                    <th>Fertilizer Type</th>
+                                    <th>Compound D</th>
+                                    <th>Urea</th>
+                                    <th>Total Bags</th>
+                                    <th>Downpayment</th>
+                                    <th>Ratio</th>
+                                    <th>Expected Maize</th>
+                                    <th>Maize Remaining</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fert-loans-table-body">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Asset Finance Loans View -->
+            <div id="asset-tab" class="tab-view">
+                <div class="section-card glass">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-tractor"></i> Asset Finance Loans</h3>
+                        <button class="btn btn-sm btn-cyan" onclick="openIssueModal('asset_finance')"><i class="fa-solid fa-plus"></i> New Asset Loan</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Loan ID</th>
+                                    <th></th>
+                                    <th>Farmer Name</th>
+                                    <th>Asset Description</th>
+                                    <th>Asset Value</th>
+                                    <th>Downpayment</th>
+                                    <th>Interest</th>
+                                    <th>Total Repayable</th>
+                                    <th>Balance Remaining</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="asset-loans-table-body">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Cash Loans View -->
+            
+    <div class="tab-view" id="applications-tab">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="color: var(--text-dim); font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Applications</h3>
+            <button class="btn btn-primary" onclick="openApplicationModal()"><i class="fa-solid fa-plus"></i> New Application</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: rgba(255,255,255,0.05);">
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--border);">Application ID</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--border);">Borrower</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--border);">Product</th>
+                        <th style="padding: 10px; text-align: right; border-bottom: 1px solid var(--border);">Amount</th>
+                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--border);">Status</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--border);">Date</th>
+                    </tr>
+                </thead>
+                <tbody id="applications-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-view" id="hq-disbursement-tab">
+        <div class="section-card glass">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-money-bill-transfer"></i> Disbursement</h3>
+                <button class="btn btn-primary" onclick="openModal('new-disbursement-modal')"><i class="fa-solid fa-plus"></i> New Disbursement</button>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Disbursement ID</th>
+                            <th>Loan ID</th>
+                            <th>Borrower</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="disbursement-table-body">
+                        <tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 20px;">Loading disbursements...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-view" id="hq-repayments-tab">
+        <div class="section-card glass">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-rotate-left"></i> Repayments & Reconciliation</h3>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" onclick="showToast('Reconciliation module coming soon', 'success')"><i class="fa-solid fa-check-double"></i> Reconcile</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Repayment ID</th>
+                            <th>Loan ID</th>
+                            <th>Borrower</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Allocation</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repayment-table-body">
+                        <tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 20px;">Loading repayments...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-view" id="hq-products-tab">
+        <div class="section-card glass">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-tags"></i> Products & Pricing</h3>
+                <button class="btn btn-primary" onclick="openModal('add-product-modal')"><i class="fa-solid fa-plus"></i> New Product</button>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Min Amount</th>
+                            <th>Max Amount</th>
+                            <th>Interest Rate</th>
+                            <th>Interest Type</th>
+                            <th>Frequency</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                        <tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 20px;">Loading products...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-view" id="hq-reporting-tab">
+        <div class="section-card glass">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-chart-line"></i> Reporting & Analytics</h3>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" onclick="exportPortfolioCSV()"><i class="fa-solid fa-download"></i> Export CSV</button>
+                    <button class="btn btn-primary" onclick="showToast('PDF export coming soon', 'success')"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+                </div>
+            </div>
+            <div id="reporting-kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                            <th>Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reporting-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+<div id="cash-tab" class="tab-view">
+                <div class="section-card glass">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-hand-holding-dollar"></i> Cash Loans</h3>
+                        <button class="btn btn-sm btn-amber" onclick="openIssueModal('cash')"><i class="fa-solid fa-plus"></i> New Cash Loan</button>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: flex-end; padding: 12px 0;">
+                        <div class="form-group" style="margin-bottom: 0; min-width: 150px;">
+                            <label>Branch</label>
+                            <select id="cash-filter-branch" onchange="filterCashLoans()">
+                                <option value="">All Branches</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; min-width: 150px;">
+                            <label>Product</label>
+                            <select id="cash-filter-product" onchange="filterCashLoans()">
+                                <option value="">All Products</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; min-width: 150px;">
+                            <label>Status</label>
+                            <select id="cash-filter-status" onchange="filterCashLoans()">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="completed">Completed</option>
+                                <option value="pending_approval">Pending Approval</option>
+                                <option value="overdue">Overdue</option>
+                                <option value="restructured">Restructured</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; min-width: 150px;">
+                            <label>Search</label>
+                            <input type="text" id="cash-filter-search" oninput="filterCashLoans()" placeholder="Search borrower or loan ID..." style="width: 100%;">
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-primary" onclick="exportCashLoansCSV()"><i class="fa-solid fa-download"></i> Export CSV</button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Loan ID</th>
+                                    <th></th>
+                                    <th>Farmer Name</th>
+                                    <th>Principal Amount</th>
+                                    <th>Interest Rate</th>
+                                    <th>Total Repayable</th>
+                                    <th>Balance Remaining</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cash-loans-table-body">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        <div class="tab-view" id="hq-admin-tab" data-hq-tab>
+        <div class="section-card glass">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-gear"></i> Settings & Admin</h3>
+            </div>
+            
+            <!-- User Management Section -->
+            <div class="settings-section">
+                <div class="settings-section-header" onclick="toggleSettingsSection('users-section')">
+                    <i class="fa-solid fa-circle-chevron-right"></i>
+                    <strong>User Management</strong>
+                </div>
+                <div class="settings-section-body" id="users-section">
+                    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+                        <button class="btn btn-primary" onclick="createUser()"><i class="fa-solid fa-plus"></i> Create User</button>
+                        <select id="user-role-filter" onchange="filterUsers()" style="padding: 6px 12px; border-radius: var(--radius-sm); background: var(--surface); color: var(--text); border: 1px solid var(--border-color);">
+                            <option value="">All Roles</option>
+                            <option value="HQ">HQ</option>
+                            <option value="District">District</option>
+                            <option value="Village">Village</option>
+                            <option value="Agent">Agent</option>
+                        </select>
+                    </div>
+                    <div class="table-wrapper" style="margin-top: 16px;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>District</th>
+                                    <th>Village</th>
+                                    <th>Shop</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="settings-users-table-body">
+                                <tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 20px;">Loading users...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roles & Approval Matrix Section -->
+            <div class="settings-section">
+                <div class="settings-section-header" onclick="toggleSettingsSection('roles-section')">
+                    <i class="fa-solid fa-circle-chevron-right"></i>
+                    <strong>Roles & Approval Matrix</strong>
+                </div>
+                <div class="settings-section-body" id="roles-section">
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Approval Limit (ZMW)</th>
+                                    <th>Branch Access</th>
+                                    <th>HQ Access</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="settings-roles-table-body">
+                                <tr><td colspan="5" style="text-align: center; color: var(--text-dim); padding: 20px;">Loading roles...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Settings Section -->
+            <div class="settings-section">
+                <div class="settings-section-header" onclick="toggleSettingsSection('admin-system-section')">
+                    <i class="fa-solid fa-circle-chevron-right"></i>
+                    <strong>System Settings</strong>
+                </div>
+                <div class="settings-section-body" id="admin-system-section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>System Name</label>
+                            <input type="text" data-setting="system.system_name" value="AgriFin Microfinance Portal">
+                        </div>
+                        <div class="form-group">
+                            <label>Version</label>
+                            <input type="text" value="1.0.0" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Organization Name</label>
+                            <input type="text" data-setting="system.organization_name" value="AgriFin Microfinance">
+                        </div>
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select data-setting="system.currency">
+                                <option value="ZMW" selected>ZMW</option>
+                                <option value="USD">USD</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Default Theme</label>
+                            <select data-setting="system.default_theme">
+                                <option value="dark" selected>Dark</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date Format</label>
+                            <select data-setting="system.date_format">
+                                <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>JWT Token Expiry (hours)</label>
+                            <input type="number" data-setting="system.jwt_expiry_hours" value="4" min="1" max="24">
+                        </div>
+                        <div class="form-group">
+                            <label>Shops Per Page</label>
+                            <input type="number" data-setting="system.shops_per_page" value="16" min="4" max="100">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Inventory Per Page</label>
+                            <input type="number" data-setting="system.inventory_per_page" value="10" min="4" max="100">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveHqSettings()"><i class="fa-solid fa-check"></i> Save and Deploy</button>
+                </div>
+            </div>
+
+            <!-- Business Rules Section -->
+            <div class="settings-section">
+                <div class="settings-section-header" onclick="toggleSettingsSection('business-section')">
+                    <i class="fa-solid fa-circle-chevron-right"></i>
+                    <strong>Business Rules</strong>
+                </div>
+                <div class="settings-section-body" id="business-section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fertilizer Downpayment Per Bag (ZMW)</label>
+                            <input type="number" data-setting="loan_rules.fertilizer_downpayment_per_bag" value="450" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Default Repayment Ratio</label>
+                            <input type="text" data-setting="loan_rules.default_repayment_ratio" value="1:4">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fertilizer Term (days)</label>
+                            <input type="number" data-setting="loan_rules.fertilizer_term_days" value="180" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Default Fertilizer Type</label>
+                            <input type="text" data-setting="loan_rules.default_fertilizer_type" value="NPK + Urea Compound">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Asset Downpayment (%)</label>
+                            <input type="number" data-setting="loan_rules.asset_downpayment_percent" value="20" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Asset Interest Rate (%)</label>
+                            <input type="number" data-setting="loan_rules.asset_interest_rate" value="15" min="0" max="100">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Asset Installments</label>
+                            <input type="number" data-setting="loan_rules.asset_installments" value="12" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Asset Installment Frequency</label>
+                            <select data-setting="loan_rules.asset_installment_frequency">
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly" selected>Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Asset Term (days)</label>
+                            <input type="number" data-setting="loan_rules.asset_term_days" value="365" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Cash Interest Rate (%)</label>
+                            <input type="number" data-setting="loan_rules.cash_interest_rate" value="10" min="0" max="100">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cash Term (months)</label>
+                            <input type="number" data-setting="loan_rules.cash_term_months" value="6" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Cash Term (days)</label>
+                            <input type="number" data-setting="loan_rules.cash_term_days" value="180" min="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Default Cash Purpose</label>
+                        <input type="text" data-setting="loan_rules.default_cash_purpose" value="General Agricultural Cash">
+                    </div>
+                    <button class="btn btn-amber" onclick="saveHqSettings()"><i class="fa-solid fa-pen"></i> Save Rules</button>
+                </div>
+            </div>
+
+            <!-- Limits & Thresholds Section -->
+            <div class="settings-section">
+                <div class="settings-section-header" onclick="toggleSettingsSection('limits-section')">
+                    <i class="fa-solid fa-circle-chevron-right"></i>
+                    <strong>Limits & Thresholds</strong>
+                </div>
+                <div class="settings-section-body" id="limits-section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Default Shop Max Loan Limit (ZMW)</label>
+                            <input type="number" data-setting="limits.default_shop_max_loan_limit" value="10000" min="1000">
+                        </div>
+                        <div class="form-group">
+                            <label>Min Cash Loan Amount (ZMW)</label>
+                            <input type="number" data-setting="limits.min_cash_loan_amount" value="50" min="1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Min Asset Value (ZMW)</label>
+                            <input type="number" data-setting="limits.min_asset_value" value="100" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Low Stock Threshold (shop)</label>
+                            <input type="number" data-setting="limits.low_stock_threshold" value="10" min="1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fertilizer Low Stock Threshold</label>
+                            <input type="number" data-setting="limits.fert_low_stock_threshold" value="500" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Asset Low Stock Threshold</label>
+                            <input type="number" data-setting="limits.asset_low_stock_threshold" value="2" min="1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cash Reserve Low Threshold (ZMW)</label>
+                            <input type="number" data-setting="limits.cash_reserve_low_threshold" value="50000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Expiry Warning (days)</label>
+                            <input type="number" data-setting="limits.expiry_warning_days" value="90" min="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Flags Section -->
+            <div class="settings-section">
+                <div class="settings-section-header" onclick="toggleSettingsSection('features-section')">
+                    <i class="fa-solid fa-circle-chevron-right"></i>
+                    <strong>Feature Flags</strong>
+                </div>
+                <div class="settings-section-body" id="features-section">
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" data-setting="features.mobile_money" checked> Mobile Money
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" data-setting="features.sms_notifications"> SMS Notifications
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" data-setting="features.accounting_sync" checked> Accounting Sync
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Templates Section -->
+            <div class="settings-section">
+                <div class="settings-section-header" onclick="toggleSettingsSection('templates-section')">
+                    <i class="fa-solid fa-circle-chevron-right"></i>
+                    <strong>Notification Templates</strong>
+                </div>
+                <div class="settings-section-body" id="templates-section">
+                    <div class="form-group">
+                        <label>Repayment Reminder</label>
+                        <textarea rows="3" data-setting="templates.repayment_reminder">Dear {{farmer_name}}, your loan repayment of ZMW {{amount}} is due on {{due_date}}. Please visit your nearest shop to make payment.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Disbursement Notice</label>
+                        <textarea rows="3" data-setting="templates.disbursement_notice">Dear {{farmer_name}}, your loan of ZMW {{amount}} has been disbursed. Please collect from {{shop_name}}.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Overdue Alert</label>
+                        <textarea rows="3" data-setting="templates.overdue_alert">Dear {{farmer_name}}, your loan payment is overdue by {{days_overdue}} days. Please settle immediately to avoid penalties.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integrations Section -->
+            <div class="settings-section">
+                <div class="settings-section-header" onclick="toggleSettingsSection('integrations-section')">
+                    <i class="fa-solid fa-circle-chevron-right"></i>
+                    <strong>Integrations</strong>
+                </div>
+                <div class="settings-section-body" id="integrations-section">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                        <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: var(--radius-sm); border-left: 3px solid var(--cyan);">
+                            <h4 style="margin-bottom: 8px;">Payment Gateway</h4>
+                            <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 12px;">Connect mobile money and bank transfer providers.</p>
+                            <span class="badge badge-active">Active</span>
+                            <button class="btn btn-sm btn-primary" style="margin-top: 8px;" onclick="showToast('Payment gateway configured', 'success')">Configure</button>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: var(--radius-sm); border-left: 3px solid var(--amber);">
+                            <h4 style="margin-bottom: 8px;">SMS Notifications</h4>
+                            <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 12px;">Send repayment reminders and alerts via SMS.</p>
+                            <span class="badge badge-warning">Inactive</span>
+                            <button class="btn btn-sm btn-primary" style="margin-top: 8px;" onclick="showToast('SMS notifications configured', 'success')">Configure</button>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: var(--radius-sm); border-left: 3px solid var(--emerald);">
+                            <h4 style="margin-bottom: 8px;">Accounting Sync</h4>
+                            <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 12px;">Sync loan data to external accounting software.</p>
+                            <span class="badge badge-active">Active</span>
+                            <button class="btn btn-sm btn-primary" style="margin-top: 8px;" onclick="showToast('Accounting sync configured', 'success')">Configure</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 14px; display: flex; gap: 10px;">
+            <button class="btn btn-emerald" onclick="saveHqSettings()">
+                <i class="fa-solid fa-floppy-disk"></i> Save All Settings
+            </button>
+            <button class="btn btn-secondary" onclick="loadHqSettings()">
+                <i class="fa-solid fa-rotate-right"></i> Reset / Reload
+            </button>
+        </div>
+    </div>
+
+
+    </main>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Modal 0: Add Shop Modal -->
+    <div class="modal" id="add-shop-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-store"></i> Add New Regional Shop</h3>
+                <button class="close-btn" onclick="closeModal('add-shop-modal')">&times;</button>
+            </div>
+            <form id="add-shop-form" onsubmit="handleCreateShop(event)">
+                <div class="form-group">
+                    <label>Shop Name *</label>
+                    <input type="text" id="shop-name-input" required placeholder="e.g. ShopC">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Province *</label>
+                        <select id="shop-province-input" required>
+                            <option value="">Select Province</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>District *</label>
+                        <select id="shop-district-input" required>
+                            <option value="">Select District</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Village / Area *</label>
+                        <input type="text" id="shop-village-input" value="VillageX" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Assigned Agent Username</label>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="shop-agent-select" style="flex: 1;">
+                                <option value="agent1">agent1 (Joseph)</option>
+                                <option value="agent2">agent2 (Mary)</option>
+                                <option value="Unassigned">-- Unassigned --</option>
+                            </select>
+                            <button type="button" class="btn btn-sm btn-cyan" onclick="openModal('add-agent-modal')" title="Add New Agent">
+                                <i class="fa-solid fa-user-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Max Loan Limit per Farmer (ZMW)</label>
+                    <input type="number" id="shop-limit-input" value="10000" min="1000">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-shop-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-check"></i> Create Shop</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 0.1: Add New Agent -->
+    <div class="modal" id="add-agent-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-plus"></i> Add New Agent</h3>
+                <button class="close-btn" onclick="closeModal('add-agent-modal')">&times;</button>
+            </div>
+            <form id="add-agent-form" onsubmit="event.preventDefault(); createNewAgent();">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Username *</label>
+                        <input type="text" id="new-agent-username-input" required placeholder="e.g. agent3">
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="new-agent-name-input" required placeholder="e.g. John Banda">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="text" id="new-agent-password-input" required placeholder="Set initial password">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Province</label>
+                        <select id="new-agent-province-input">
+                            <option value="">Select Province</option>
+                            <option value="Central">Central</option>
+                            <option value="Copperbelt">Copperbelt</option>
+                            <option value="Eastern">Eastern</option>
+                            <option value="Luapula">Luapula</option>
+                            <option value="Lusaka">Lusaka</option>
+                            <option value="Muchinga">Muchinga</option>
+                            <option value="Northern">Northern</option>
+                            <option value="North-Western">North-Western</option>
+                            <option value="Southern">Southern</option>
+                            <option value="Western">Western</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>District</label>
+                        <select id="new-agent-district-input">
+                            <option value="">Select District</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Village / Area</label>
+                    <input type="text" id="new-agent-village-input" placeholder="Enter village or area name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-agent-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-cyan"><i class="fa-solid fa-check"></i> Create Agent</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 0.5: Shop Settings & Inventory Management Modal -->
+    <div class="modal" id="shop-detail-modal">
+        <div class="modal-content glass" style="max-width: 720px;">
+            <div class="modal-header">
+                <div>
+                    <h3 id="sd-title"><i class="fa-solid fa-store"></i> Shop Detail & Management</h3>
+                    <small id="sd-subtitle" style="color: var(--text-muted);">Eastern Province -> DistrictA -> VillageX</small>
+                    <small id="sd-shop-id" style="color: var(--text-muted); margin-left: 8px;"></small>
+                </div>
+                <button class="close-btn" onclick="closeModal('shop-detail-modal')">&times;</button>
+            </div>
+
+            <!-- Shop Management Tabs inside Modal -->
+            <div class="shop-modal-tabs">
+                <button class="sm-tab active" onclick="switchShopModalTab('sm-settings-view', this)"><i class="fa-solid fa-sliders"></i> Settings & Agent</button>
+                <button class="sm-tab" onclick="switchShopModalTab('sm-inventory-view', this)"><i class="fa-solid fa-boxes-stacked"></i> Inventory Allocation</button>
+                <button class="sm-tab" onclick="switchShopModalTab('sm-data-view', this)"><i class="fa-solid fa-users-viewfinder"></i> Farmers & Loans</button>
+            </div>
+
+            <div class="shop-modal-body">
+                <!-- 1. Settings View -->
+                <div id="sm-settings-view" class="sm-view active">
+                    <form id="shop-settings-form" onsubmit="handleSaveShopSettings(event)">
+                        <input type="hidden" id="sd-shop-name-hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Operating Status</label>
+                                <select id="sd-status-select">
+                                    <option value="active">Active (Operational)</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Assigned Field Agent</label>
+                                <select id="sd-agent-select">
+                                    <option value="agent1">agent1 (Joseph)</option>
+                                    <option value="agent2">agent2 (Mary)</option>
+                                    <option value="Unassigned">-- Unassigned --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Loan Limit per Farmer (ZMW)</label>
+                            <input type="number" id="sd-limit-input" value="15000">
+                        </div>
+                        <button type="submit" class="btn btn-emerald btn-sm" style="margin-top: 10px;">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Shop Settings
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 2. Inventory Allocation View -->
+                <div id="sm-inventory-view" class="sm-view">
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <h4><i class="fa-solid fa-cubes"></i> Current Stock Inventory</h4>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Quantity Available</th>
+                                        <th>Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sd-inventory-tbody">
+                                    <!-- Rendered by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <form id="allocate-inventory-form" onsubmit="handleAllocateStock(event)" style="background: rgba(255,255,255,0.03); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-top: 8px;">
+                            <h5 style="margin-bottom: 8px; color: var(--emerald);"><i class="fa-solid fa-truck-ramp-box"></i> Allocate Stock to this Shop</h5>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Item Name *</label>
+                                    <input type="text" id="alloc-item-input" placeholder="e.g. NPK Compound (Bags) or Solar Pump" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Quantity *</label>
+                                    <input type="number" id="alloc-qty-input" value="20" min="1" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Unit</label>
+                                    <input type="text" id="alloc-unit-input" value="bags">
+                                </div>
+                                <div class="form-group" style="justify-content: flex-end;">
+                                    <button type="submit" class="btn btn-cyan btn-sm" style="height: 38px; margin-top: auto;">
+                                        <i class="fa-solid fa-plus-minus"></i> Allocate Inventory
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 3. Farmers & Loans View -->
+                <div id="sm-data-view" class="sm-view">
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <h4><i class="fa-solid fa-people-line"></i> Shop Farmers & Active Loans</h4>
+                        <div id="sd-shop-clients-container">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('shop-detail-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 1: Add Farmer -->
+    <div class="modal" id="add-client-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-plus"></i> Register New Farmer</h3>
+                <button class="close-btn" onclick="closeModal('add-client-modal')">&times;</button>
+            </div>
+            <form id="add-farmer-form" onsubmit="handleRegisterFarmer(event)">
+                <div class="form-group">
+                    <label>Farmer Full Name *</label>
+                    <input type="text" id="form-farmer-name" required placeholder="e.g. John Banda">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" id="form-farmer-phone" placeholder="+260971234567">
+                    </div>
+                    <div class="form-group">
+                        <label>NRC Number</label>
+                        <input type="text" id="form-farmer-nrc" placeholder="123456/78/1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Province</label>
+                        <input type="text" id="form-farmer-province" value="Eastern Province">
+                    </div>
+                    <div class="form-group">
+                        <label>District</label>
+                        <input type="text" id="form-farmer-district" value="DistrictA">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Village</label>
+                        <input type="text" id="form-farmer-village" value="VillageX">
+                    </div>
+                    <div class="form-group">
+                        <label>Shop</label>
+                        <input type="text" id="form-farmer-shop" value="ShopA">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-client-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-check"></i> Register Farmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Issue Loan Launcher Modal -->
+    <div class="modal" id="issue-loan-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-circle-plus"></i> Select Loan Category</h3>
+                <button class="close-btn" onclick="closeModal('issue-loan-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                    <div id="repay-allocation-preview" style="background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border-left: 3px solid var(--cyan); padding: 12px; margin-bottom: 16px; display: none;">
+                        <h4 style="font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Allocation Preview</h4>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                            <div>
+                                <small style="color: var(--text-muted);">Fees</small>
+                                <div style="font-weight: 600;" id="alloc-preview-fees">ZMW 0.00</div>
+                            </div>
+                            <div>
+                                <small style="color: var(--text-muted);">Penalty</small>
+                                <div style="font-weight: 600;" id="alloc-preview-penalty">ZMW 0.00</div>
+                            </div>
+                            <div>
+                                <small style="color: var(--text-muted);">Interest</small>
+                                <div style="font-weight: 600;" id="alloc-preview-interest">ZMW 0.00</div>
+                            </div>
+                            <div>
+                                <small style="color: var(--text-muted);">Principal</small>
+                                <div style="font-weight: 600;" id="alloc-preview-principal">ZMW 0.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                <div class="loan-type-selector">
+                    <div class="loan-type-card card-fert" onclick="closeModal('issue-loan-modal'); openIssueModal('fertilizer');">
+                        <div class="icon"><i class="fa-solid fa-seedling"></i></div>
+                        <h4>Fertilizer Loan</h4>
+                        <p>In-kind input financing repaid in maize harvest bags.</p>
+                    </div>
+                    <div class="loan-type-card card-asset" onclick="closeModal('issue-loan-modal'); openIssueModal('asset_finance');">
+                        <div class="icon"><i class="fa-solid fa-tractor"></i></div>
+                        <h4>Asset Finance</h4>
+                        <p>Equipment, pumps & tools financing with downpayment.</p>
+                    </div>
+                    <div class="loan-type-card card-cash" onclick="closeModal('issue-loan-modal'); openIssueModal('cash');">
+                        <div class="icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        <h4>Cash Loan</h4>
+                        <p>Direct working capital cash loans for farm operations.</p>
+                    </div>
+                    <div class="loan-type-card card-fert" onclick="closeModal('issue-loan-modal'); openModal('issue-unified-modal'); populateUnifiedLoanForm();">
+                        <div class="icon"><i class="fa-solid fa-file-invoice"></i></div>
+                        <h4>Unified Loan Wizard</h4>
+                        <p>Structured loan creation with full terms, approvals, and audit trail.</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Issue Fertilizer Loan -->
+    <div class="modal" id="issue-fert-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-seedling"></i> Issue Fertilizer Loan</h3>
+                <button class="close-btn" onclick="closeModal('issue-fert-modal')">&times;</button>
+            </div>
+            <form id="issue-fert-form" onsubmit="handleIssueFertilizerLoan(event)">
+                <div class="form-group">
+                    <label>Select Registered Farmer *</label>
+                    <select id="fert-farmer-select" required>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fertilizer Type *</label>
+                    <select id="fert-type-select" onchange="updateFertilizerInputs()" required>
+                        <option value="Compound D">Compound D</option>
+                        <option value="Urea">Urea</option>
+                        <option value="NPK + Urea Compound">NPK + Urea Compound</option>
+                        <option value="Basal Top Dressing">Basal Top Dressing</option>
+                        <option value="Lime">Lime</option>
+                        <option value="Sulphate of Ammonia">Sulphate of Ammonia</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div id="fert-compound-d-group" class="form-row">
+                    <div class="form-group">
+                        <label>Compound D Bags *</label>
+                        <input type="number" id="fert-compound-d-bags" value="0" min="0" oninput="calcFertilizerSummary()" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Urea Bags *</label>
+                        <input type="number" id="fert-urea-bags" value="0" min="0" oninput="calcFertilizerSummary()" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Repayment Ratio (Maize Bags per Fertilizer Bag)</label>
+                        <input type="text" id="fert-ratio-input" value="1:4" oninput="calcFertilizerSummary()">
+                    </div>
+                    <div class="form-group">
+                        <label>Downpayment Cash (ZMW)</label>
+                        <input type="number" id="fert-downpayment-input" value="900" readonly>
+                    </div>
+                </div>
+                <div class="calculation-box">
+                    <span><i class="fa-solid fa-calculator"></i> Calculation Summary:</span>
+                    <strong id="fert-calc-summary">Expected Maize: 0 Bags | Downpayment: ZMW 900</strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('issue-fert-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-check"></i> Issue Loan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Issue Asset Finance Loan -->
+    <div class="modal" id="issue-asset-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-tractor"></i> Issue Asset Finance Loan</h3>
+                <button class="close-btn" onclick="closeModal('issue-asset-modal')">&times;</button>
+            </div>
+            <form id="issue-asset-form" onsubmit="handleIssueAssetLoan(event)">
+                <div class="form-group">
+                    <label>Select Registered Farmer *</label>
+                    <select id="asset-farmer-select" required>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Asset Description / Type *</label>
+                        <input type="text" id="asset-type-input" placeholder="e.g. Solar Pump, Sheller" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Asset Total Value (ZMW) *</label>
+                        <input type="number" id="asset-value-input" value="5000" min="100" oninput="calcAssetSummary()" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Downpayment (%)</label>
+                        <input type="number" id="asset-downpayment-percent" value="20" min="0" max="100" oninput="calcAssetSummary()">
+                    </div>
+                    <div class="form-group">
+                        <label>Interest Rate (%)</label>
+                        <input type="number" id="asset-interest-rate" value="15" min="0" oninput="calcAssetSummary()">
+                    </div>
+                </div>
+                <div class="calculation-box">
+                    <span><i class="fa-solid fa-calculator"></i> Financial Summary:</span>
+                    <strong id="asset-calc-summary">Downpayment: ZMW 1,000 | Loan Net: ZMW 4,000 | Total Repayable: ZMW 4,600</strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('issue-asset-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-cyan"><i class="fa-solid fa-check"></i> Issue Asset Loan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 5: Issue Cash Loan -->
+    <div class="modal" id="issue-cash-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-hand-holding-dollar"></i> Issue Cash Loan</h3>
+                <button class="close-btn" onclick="closeModal('issue-cash-modal')">&times;</button>
+            </div>
+            <form id="issue-cash-form" onsubmit="handleIssueCashLoan(event)">
+                <div class="form-group">
+                    <label>Select Registered Farmer *</label>
+                    <select id="cash-farmer-select" required>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Loan Cash Amount (ZMW) *</label>
+                        <input type="number" id="cash-amount-input" value="2000" min="50" oninput="calcCashSummary()" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Interest Rate (%)</label>
+                        <input type="number" id="cash-interest-input" value="10" min="0" oninput="calcCashSummary()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Purpose / Plan Notes</label>
+                    <input type="text" id="cash-purpose-input" placeholder="e.g. Labor costs, weed control">
+                </div>
+                <div class="calculation-box">
+                    <span><i class="fa-solid fa-calculator"></i> Total Repayable Amount:</span>
+                    <strong id="cash-calc-summary">ZMW 2,200.00</strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('issue-cash-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-amber"><i class="fa-solid fa-check"></i> Issue Cash Loan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 5B: Unified Loan Creation -->
+    <div class="modal" id="issue-unified-modal">
+        <div class="modal-content glass" style="max-width: 780px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-invoice"></i> Create New Loan</h3>
+                <button class="close-btn" onclick="closeModal('issue-unified-modal')">&times;</button>
+            </div>
+            <form id="issue-unified-form" onsubmit="handleCreateUnifiedLoan(event)">
+                <div class="form-group">
+                    <label>Registered Farmer *</label>
+                    <select id="unified-farmer-select" required>
+                        <option value="">Select Farmer</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Shop ID *</label>
+                        <input type="text" id="unified-shop-id-input" list="unified-shop-list" placeholder="Search by ID or name..." required>
+                        <datalist id="unified-shop-list"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Product *</label>
+                        <select id="unified-product-select" onchange="onUnifiedProductChange()" required>
+                            <option value="">Select Loan Product</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Loan Amount (ZMW) *</label>
+                        <input type="number" id="unified-loan-amount" value="5000" min="1" oninput="calcUnifiedLoan()" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Interest Rate (%)</label>
+                        <input type="number" id="unified-interest-rate" value="10" min="0" oninput="calcUnifiedLoan()">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Repayment Frequency</label>
+                        <select id="unified-frequency" onchange="calcUnifiedLoan()">
+                            <option value="Weekly">Weekly</option>
+                            <option value="Monthly" selected>Monthly</option>
+                            <option value="Seasonal">Seasonal</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Installments</label>
+                        <input type="number" id="unified-installments" value="6" min="1" oninput="calcUnifiedLoan()">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Installment Amount (auto)</label>
+                        <input type="text" id="unified-installment-amount" value="916.67" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Grace Period (days)</label>
+                        <input type="number" id="unified-grace-period" value="0" min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Repayment Method</label>
+                        <select id="unified-repayment-method">
+                            <option value="Cash only">Cash only</option>
+                            <option value="Commodity only">Commodity only</option>
+                            <option value="Mixed">Mixed (cash + commodity)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Disbursement Method</label>
+                        <select id="unified-disbursement-method">
+                            <option value="Cash at shop">Cash at shop</option>
+                            <option value="Mobile money">Mobile money</option>
+                            <option value="Bank transfer">Bank transfer</option>
+                            <option value="Asset delivery">Asset delivery</option>
+                            <option value="Inputs at shop">Inputs at shop</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Late Penalty Type</label>
+                        <select id="unified-penalty-type">
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="fixed">Fixed Amount</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Late Penalty Value</label>
+                        <input type="number" id="unified-penalty-value" value="2" min="0" step="0.1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Default Handling</label>
+                        <select id="unified-default-handling">
+                            <option value="Mark defaulted after 3 missed installments">After 3 missed installments</option>
+                            <option value="Mark defaulted after 2 missed installments">After 2 missed installments</option>
+                            <option value="Mark defaulted after 1 missed installment">After 1 missed installment</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Restructuring Allowed</label>
+                        <select id="unified-restructuring">
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Approval Level</label>
+                        <select id="unified-approval-level">
+                            <option value="Shop">Shop level</option>
+                            <option value="HQ">HQ level</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Purpose / Notes</label>
+                        <input type="text" id="unified-purpose" placeholder="e.g. Labor costs, weed control">
+                    </div>
+                </div>
+                <div class="calculation-box">
+                    <span><i class="fa-solid fa-calculator"></i> Summary:</span>
+                    <strong id="unified-calc-summary">Total Repayable: ZMW 0.00 | Installments: 0</strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('issue-unified-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-check"></i> Create Loan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 6: Record Repayment Modal -->
+    <div class="modal" id="repayment-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-receipt"></i> Record Loan Repayment</h3>
+                <button class="close-btn" onclick="closeModal('repayment-modal')">&times;</button>
+            </div>
+            <form id="repayment-form" onsubmit="handleRecordRepayment(event)">
+                <input type="hidden" id="repay-loan-id">
+                <input type="hidden" id="repay-loan-category">
+                <div class="repayment-meta-card">
+                    <div class="meta-item">
+                        <span>Loan ID</span>
+                        <strong id="repay-meta-id">FL-101</strong>
+                    </div>
+                    <div class="meta-item">
+                        <span>Farmer Name</span>
+                        <strong id="repay-meta-farmer">Farmer Name</strong>
+                    </div>
+                    <div class="meta-item">
+                        <span>Current Balance</span>
+                        <strong id="repay-meta-balance" class="text-warning">10 Bags</strong>
+                    </div>
+                </div>
+    
+                <div class="modal-body">
+                <div id="repay-allocation-preview" style="background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border-left: 3px solid var(--cyan); padding: 12px; margin-bottom: 16px; display: none;">
+                    <h4 style="font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Allocation Preview</h4>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                        <div>
+                            <small style="color: var(--text-muted);">Fees</small>
+                            <div style="font-weight: 600;" id="alloc-preview-fees">ZMW 0.00</div>
+                        </div>
+                        <div>
+                            <small style="color: var(--text-muted);">Penalty</small>
+                            <div style="font-weight: 600;" id="alloc-preview-penalty">ZMW 0.00</div>
+                        </div>
+                        <div>
+                            <small style="color: var(--text-muted);">Interest</small>
+                            <div style="font-weight: 600;" id="alloc-preview-interest">ZMW 0.00</div>
+                        </div>
+                        <div>
+                            <small style="color: var(--text-muted);">Principal</small>
+                            <div style="font-weight: 600;" id="alloc-preview-principal">ZMW 0.00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Payment Amount *</label>
+                    <input type="number" step="any" id="repay-amount-input" onchange="showRepaymentPreview(document.getElementById('repay-loan-id').value, parseFloat(this.value))" required placeholder="Enter amount">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <input type="text" id="repay-notes-input" placeholder="Repayment notes...">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-amber" onclick="partialPayment()"><i class="fa-solid fa-circle-half-stroke"></i> Partial Payment</button>
+                    <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-check"></i> Record Repayment</button>
+                    <button type="button" class="btn btn-rose" onclick="reverseTransaction()"><i class="fa-solid fa-rotate-left"></i> Reverse Transaction</button>
+                    <button type="button" class="btn" onclick="printReceipt()"><i class="fa-solid fa-print"></i> Print Receipt</button>
+                    <button type="button" class="btn" onclick="closeModal('repayment-modal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="schedule-modal">
+        <div class="modal-content glass" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-calendar-days"></i> Loan Schedule</h3>
+                <button class="close-btn" onclick="closeModal('schedule-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(255,255,255,0.05);">
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid var(--border);">#</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid var(--border);">Due Date</th>
+                                <th style="padding: 8px; text-align: right; border-bottom: 1px solid var(--border);">Principal</th>
+                                <th style="padding: 8px; text-align: right; border-bottom: 1px solid var(--border);">Interest</th>
+                                <th style="padding: 8px; text-align: right; border-bottom: 1px solid var(--border);">Fees</th>
+                                <th style="padding: 8px; text-align: center; border-bottom: 1px solid var(--border);">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="restructure-modal">
+        <div class="modal-content glass" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-arrows-rotate"></i> Restructure Loan</h3>
+                <button class="close-btn" onclick="closeModal('restructure-modal')">&times;</button>
+            </div>
+            <form id="restructure-form" onsubmit="handleRestructure(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="restructure-loan-id">
+                    <div class="form-group">
+                        <label>New Installments *</label>
+                        <input type="number" id="restructure-installments" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Term (Days) *</label>
+                        <input type="number" id="restructure-term-days" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-amber"><i class="fa-solid fa-arrows-rotate"></i> Restructure</button>
+                    <button type="button" class="btn" onclick="closeModal('restructure-modal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="portfolio-modal">
+        <div class="modal-content glass" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-chart-pie"></i> Loan Portfolio Report</h3>
+                <button class="close-btn" onclick="closeModal('portfolio-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                    <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--cyan);">
+                        <small style="color: var(--text-muted);">Total Loans</small>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--cyan);" id="port-total-loans">0</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--emerald);">
+                        <small style="color: var(--text-muted);">Total Principal</small>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--emerald);" id="port-total-principal">ZMW 0</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--amber);">
+                        <small style="color: var(--text-muted);">Total Outstanding</small>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--amber);" id="port-total-outstanding">ZMW 0</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--rose);">
+                        <small style="color: var(--text-muted);">PAR30</small>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--rose);" id="port-par30">0</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--orange);">
+                        <small style="color: var(--text-muted);">Overdue</small>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--orange);" id="port-overdue">0</div>
+                    </div>
+                </div>
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <h4 style="margin-bottom: 8px; color: var(--text-dim);">By Status</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(255,255,255,0.05);">
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid var(--border);">Status</th>
+                                <th style="padding: 8px; text-align: right; border-bottom: 1px solid var(--border);">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolio-status-body"></tbody>
+                    </table>
+                    <h4 style="margin: 16px 0 8px; color: var(--text-dim);">By Type</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(255,255,255,0.05);">
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid var(--border);">Type</th>
+                                <th style="padding: 8px; text-align: right; border-bottom: 1px solid var(--border);">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolio-type-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="loan-detail-modal">
+        <div class="modal-content glass" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-circle-info"></i> Loan Details</h3>
+                <button class="close-btn" onclick="closeModal('loan-detail-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="loan-detail-content">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--cyan);">
+                            <small style="color: var(--text-muted);">Borrower</small>
+                            <div style="font-size: 16px; font-weight: 600;" id="detail-borrower-name">-</div>
+                            <small style="color: var(--text-dim);" id="detail-borrower-phone">-</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--emerald);">
+                            <small style="color: var(--text-muted);">Loan Amount</small>
+                            <div style="font-size: 16px; font-weight: 600;" id="detail-loan-amount">-</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--amber);">
+                            <small style="color: var(--text-muted);">Outstanding</small>
+                            <div style="font-size: 16px; font-weight: 600;" id="detail-outstanding">-</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--rose);">
+                            <small style="color: var(--text-muted);">Status</small>
+                            <div style="font-size: 16px; font-weight: 600;" id="detail-status">-</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                        <button class="btn btn-sm btn-primary" onclick="switchLoanTab('details')" id="tab-btn-details">Details</button>
+                        <button class="btn btn-sm" onclick="switchLoanTab('schedule')" id="tab-btn-schedule">Schedule</button>
+                        <button class="btn btn-sm" onclick="switchLoanTab('audit')" id="tab-btn-audit">Audit Log</button>
+                    </div>
+                    <div id="loan-tab-details" class="loan-tab-content">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-group">
+                                <label>Product</label>
+                                <input type="text" id="detail-product" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Interest Rate</label>
+                                <input type="text" id="detail-interest-rate" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Repayment Frequency</label>
+                                <input type="text" id="detail-frequency" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Grace Period (Days)</label>
+                                <input type="text" id="detail-grace" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Disbursement Method</label>
+                                <input type="text" id="detail-disbursement" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Created By</label>
+                                <input type="text" id="detail-created-by" readonly>
+                            </div>
+                        </div>
+                        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;" id="loan-action-buttons">
+                        </div>
+                    </div>
+                    <div id="loan-tab-schedule" class="loan-tab-content" style="display: none;">
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: rgba(255,255,255,0.05);">
+                                        <th style="padding: 8px; text-align: left; border-bottom: 1px solid var(--border);">#</th>
+                                        <th style="padding: 8px; text-align: left; border-bottom: 1px solid var(--border);">Due Date</th>
+                                        <th style="padding: 8px; text-align: right; border-bottom: 1px solid var(--border);">Principal</th>
+                                        <th style="padding: 8px; text-align: right; border-bottom: 1px solid var(--border);">Interest</th>
+                                        <th style="padding: 8px; text-align: right; border-bottom: 1px solid var(--border);">Fees</th>
+                                        <th style="padding: 8px; text-align: center; border-bottom: 1px solid var(--border);">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detail-schedule-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="loan-tab-audit" class="loan-tab-content" style="display: none;">
+                        <div id="detail-audit-log" style="max-height: 400px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="application-modal">
+        <div class="modal-content glass" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-lines"></i> New Loan Application</h3>
+                <button class="close-btn" onclick="closeModal('application-modal')">&times;</button>
+            </div>
+            <form id="application-form" onsubmit="event.preventDefault();">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Borrower Name *</label>
+                            <input type="text" id="app-borrower-name" required placeholder="Full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Product *</label>
+                            <select id="app-product-select" onchange="onAppProductChange()" required>
+                                <option value="">Select Product</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Requested Amount (ZMW) *</label>
+                            <input type="number" id="app-amount" min="1" required>
+                            <small id="app-amount-hint" style="color: var(--text-dim);"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Term (Days) *</label>
+                            <input type="number" id="app-term" value="30" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Repayment Frequency</label>
+                            <input type="text" id="app-frequency" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Collateral (optional)</label>
+                            <input type="text" id="app-collateral" placeholder="e.g. Land title, Vehicle">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes / Attachments</label>
+                        <textarea id="app-notes" rows="2" placeholder="Additional notes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-amber" onclick="runEligibilityCheck()"><i class="fa-solid fa-clipboard-check"></i> Run Eligibility Check</button>
+                    <button type="submit" class="btn btn-primary" onclick="submitApplication('draft')"><i class="fa-solid fa-floppy-disk"></i> Save Draft</button>
+                    <button type="submit" class="btn btn-emerald" onclick="submitApplication('submitted')"><i class="fa-solid fa-paper-plane"></i> Submit to Underwriting</button>
+                    <button type="button" class="btn" onclick="closeModal('application-modal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="add-product-modal">
+        <div class="modal-content glass" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-box-open"></i> Create Loan Product</h3>
+                <button class="close-btn" onclick="closeModal('add-product-modal')">&times;</button>
+            </div>
+            <form id="add-product-form" onsubmit="handleAddProduct(event)">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Product Name *</label>
+                            <input type="text" id="prod-name" required placeholder="e.g. Salary Advance">
+                        </div>
+                        <div class="form-group">
+                            <label>Type *</label>
+                            <select id="prod-type" required>
+                                <option value="">Select Type</option>
+                                <option value="standard">Standard</option>
+                                <option value="salary">Salary</option>
+                                <option value="micro">Micro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Min Amount (ZMW) *</label>
+                            <input type="number" id="prod-min-amount" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Amount (ZMW) *</label>
+                            <input type="number" id="prod-max-amount" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Interest Rate (%) *</label>
+                            <input type="number" id="prod-interest-rate" min="0" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Interest Type *</label>
+                            <select id="prod-interest-type" required>
+                                <option value="">Select Type</option>
+                                <option value="flat">Flat</option>
+                                <option value="reducing">Reducing Balance</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Repayment Frequency *</label>
+                            <select id="prod-frequency" required>
+                                <option value="">Select Frequency</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="biweekly">Bi-Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Installments *</label>
+                            <input type="number" id="prod-installments" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Grace Period (Days)</label>
+                            <input type="number" id="prod-grace-period" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Approval Level</label>
+                            <select id="prod-approval-level">
+                                <option value="cashier">Cashier</option>
+                                <option value="manager">Manager</option>
+                                <option value="director">Director</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="prod-description" rows="2" placeholder="Product description..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-check"></i> Create Product</button>
+                    <button type="button" class="btn" onclick="closeModal('add-product-modal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="new-disbursement-modal">
+        <div class="modal-content glass" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-money-bill-transfer"></i> New Disbursement</h3>
+                <button class="close-btn" onclick="closeModal('new-disbursement-modal')">&times;</button>
+            </div>
+            <form id="new-disbursement-form" onsubmit="handleNewDisbursement(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Loan ID *</label>
+                        <input type="text" id="disb-loan-id" list="disb-loan-id-list" required placeholder="Enter or select loan ID">
+                        <datalist id="disb-loan-id-list"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (ZMW) *</label>
+                        <input type="number" id="disb-amount" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Disbursement Method *</label>
+                        <select id="disb-method" required>
+                            <option value="">Select Method</option>
+                            <option value="cash">Cash</option>
+                            <option value="mobile">Mobile Money</option>
+                            <option value="bank">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="disb-notes" rows="2" placeholder="Disbursement notes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-check"></i> Disburse</button>
+                    <button type="button" class="btn" onclick="closeModal('new-disbursement-modal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Modal 7: HQ Allocate Inventory -->
+    <!-- Modal: Add Stock -->
+    <div class="modal" id="add-hq-stock-modal">
+        <div class="modal-content glass" style="max-width: 720px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-warehouse"></i> Add Stock to Inventory</h3>
+                <button class="close-btn" onclick="closeModal('add-hq-stock-modal')">&times;</button>
+            </div>
+            <form id="add-hq-stock-form" onsubmit="handleAddHqStock(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Transaction Type *</label>
+                        <select id="hq-stock-tx-type" required>
+                            <option value="purchase">Purchase from Supplier</option>
+                            <option value="return">Return from Shop</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="hq-stock-category" required>
+                            <option value="fertilizer">Fertilizer</option>
+                            <option value="seed">Seed</option>
+                            <option value="pesticide">Pesticide</option>
+                            <option value="asset">Asset</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Select Item *</label>
+                    <select id="hq-stock-item-select" onchange="onHqStockItemSelectChange()" required>
+                        <option value="">Select Existing Item</option>
+                    </select>
+                    <input type="text" id="hq-stock-item-name" placeholder="Or enter new item name..." style="display: none; margin-top: 8px;">
+                </div>
+                <div id="hq-item-details-preview" style="display: none; margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+                    <small style="color: var(--text-muted);">Item Details:</small>
+                    <div id="hq-item-details-content" style="font-size: 13px; margin-top: 4px;"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Quantity *</label>
+                        <input type="number" id="hq-stock-qty" value="100" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Unit *</label>
+                        <input type="text" id="hq-stock-unit" value="bags" required>
+                    </div>
+                </div>
+                <div id="hq-stock-batch-fields">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Batch Number</label>
+                            <input type="text" id="hq-stock-batch" placeholder="e.g. CD-2026-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="date" id="hq-stock-expiry">
+                        </div>
+                    </div>
+                </div>
+                <div id="hq-stock-asset-fields" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Purchase Cost (ZMW)</label>
+                            <input type="number" id="hq-stock-cost" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Financing Terms</label>
+                            <input type="text" id="hq-stock-terms" placeholder="e.g. 12 months">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Supplier</label>
+                    <input type="text" id="hq-stock-supplier" placeholder="e.g. Zamagro Ltd">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <input type="text" id="hq-stock-notes" placeholder="e.g. GRN-001, delivery note ref">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-hq-stock-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-check"></i> Add Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="stock-management-modal">
+        <div class="modal-content glass" style="max-width: 780px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-warehouse"></i> Inventory Management</h3>
+                <button class="close-btn" onclick="closeModal('stock-management-modal')">&times;</button>
+            </div>
+            <form id="stock-management-form" onsubmit="event.preventDefault();">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Action Type *</label>
+                        <select id="stock-action-type" onchange="onStockActionChange()" required>
+                            <option value="transfer_out">Allocate to Shop</option>
+                            <option value="purchase">Purchase / Add Stock</option>
+                            <option value="return">Return from Shop</option>
+                            <option value="damaged">Mark Damaged</option>
+                            <option value="expired">Mark Expired</option>
+                            <option value="adjustment">Manual Adjustment</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="stock-category" onchange="loadHqWarehouseItems()" required>
+                            <option value="fertilizers">Fertilizers</option>
+                            <option value="seeds">Seeds</option>
+                            <option value="pesticides">Pesticides</option>
+                            <option value="assets">Assets</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="stock-shop-section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Shop ID / Name</label>
+                            <input type="text" id="stock-shop-input" list="shop-list" placeholder="Search by ID or name...">
+                            <datalist id="shop-list"></datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>Item Name *</label>
+                            <select id="stock-item-select" required>
+                                <option value="">Select Item</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="stock-shop-preview" style="display: none; margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border-left: 3px solid var(--cyan);">
+                        <small style="color: var(--text-muted);">Shop Details:</small>
+                        <div id="stock-shop-preview-content" style="font-size: 13px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+
+                <div id="stock-hq-section">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Item Name *</label>
+                            <select id="stock-hq-item-select" required>
+                                <option value="">Select Item</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity *</label>
+                            <input type="number" id="stock-qty-input" value="10" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Available Balance</label>
+                            <input type="text" id="stock-available-balance" readonly value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Unit</label>
+                            <input type="text" id="stock-unit-input" value="bags" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="stock-purchase-fields" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Supplier</label>
+                            <input type="text" id="stock-supplier" placeholder="e.g. Zamagro Ltd">
+                        </div>
+                        <div class="form-group">
+                            <label>Batch Number</label>
+                            <input type="text" id="stock-batch" placeholder="e.g. CD-2026-001">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="date" id="stock-expiry">
+                    </div>
+                </div>
+
+                <div id="stock-adjust-reason" style="display: none;">
+                    <div class="form-group">
+                        <label>Reason / Notes *</label>
+                        <input type="text" id="stock-reason" placeholder="e.g. Damaged during transport, expired stock">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('stock-management-modal')">Cancel</button>
+                    <button type="button" class="btn btn-emerald" id="stock-confirm-btn" onclick="handleStockAction()">
+                        <i class="fa-solid fa-check"></i> Confirm Action
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="add-cash-pool-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sack-dollar"></i> Update Cash Pool</h3>
+                <button class="close-btn" onclick="closeModal('add-cash-pool-modal')">&times;</button>
+            </div>
+            <form id="add-cash-pool-form" onsubmit="handleUpdateCashPool(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Total Cash (ZMW)</label>
+                        <input type="number" id="hq-cash-total" value="0" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Allocated to Shops (ZMW)</label>
+                        <input type="number" id="hq-cash-allocated" value="0" min="0" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Reserved Cash (ZMW)</label>
+                    <input type="number" id="hq-cash-reserved" value="0" min="0" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-cash-pool-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-amber"><i class="fa-solid fa-check"></i> Update Cash Pool</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="adjust-inventory-modal">
+        <div class="modal-content glass" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-pen-to-square"></i> Adjust Inventory Stock</h3>
+                <button class="close-btn" onclick="closeModal('adjust-inventory-modal')">&times;</button>
+            </div>
+            <form id="adjust-inventory-form" onsubmit="handleAdjustInventory(event)">
+                <div class="form-group">
+                    <label>Select Item *</label>
+                    <select id="inv-adjust-item-select" required>
+                        <option value="">Select Item</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Quantity Change *</label>
+                        <input type="number" id="inv-adjust-qty" value="0" min="-9999" max="9999" required>
+                        <small style="color: var(--text-dim);">Use negative to reduce stock</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Reason *</label>
+                        <select id="inv-adjust-reason" required>
+                            <option value="Manual adjustment">Manual adjustment</option>
+                            <option value="Damaged goods">Damaged goods</option>
+                            <option value="Expired stock">Expired stock</option>
+                            <option value="System correction">System correction</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('adjust-inventory-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-amber"><i class="fa-solid fa-check"></i> Apply Adjustment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Farmer Detail Modal -->
+    <div class="modal" id="farmer-detail-modal">
+        <div class="modal-content glass" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user"></i> Farmer Profile</h3>
+                <button class="close-btn" onclick="closeModal('farmer-detail-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="farmer-detail-content">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--cyan);">
+                            <small style="color: var(--text-muted);">Farmer Name</small>
+                            <div style="font-size: 16px; font-weight: 600;" id="fd-name">-</div>
+                            <small style="color: var(--text-dim);" id="fd-id">-</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--emerald);">
+                            <small style="color: var(--text-muted);">Total Loans</small>
+                            <div style="font-size: 16px; font-weight: 600;" id="fd-total-loans">0</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--amber);">
+                            <small style="color: var(--text-muted);">Active Loans</small>
+                            <div style="font-size: 16px; font-weight: 600;" id="fd-active-loans">0</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--rose);">
+                            <small style="color: var(--text-muted);">Outstanding Balance</small>
+                            <div style="font-size: 16px; font-weight: 600;" id="fd-outstanding">0</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                        <button class="btn btn-sm btn-primary" onclick="switchFarmerTab('kyc')" id="fd-tab-btn-kyc">KYC Info</button>
+                        <button class="btn btn-sm" onclick="switchFarmerTab('loans')" id="fd-tab-btn-loans">Loan History</button>
+                        <button class="btn btn-sm" onclick="switchFarmerTab('notifications')" id="fd-tab-btn-notifications">Notifications</button>
+                    </div>
+                    <div id="fd-tab-kyc" class="farmer-tab-content">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="fd-kyc-name" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="text" id="fd-kyc-phone" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>NRC Number</label>
+                                <input type="text" id="fd-kyc-nrc" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Registered Date</label>
+                                <input type="text" id="fd-kyc-registered" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Province</label>
+                                <input type="text" id="fd-kyc-province" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>District</label>
+                                <input type="text" id="fd-kyc-district" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Village</label>
+                                <input type="text" id="fd-kyc-village" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Shop</label>
+                                <input type="text" id="fd-kyc-shop" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="fd-tab-loans" class="farmer-tab-content" style="display: none;">
+                        <div id="fd-loans-list" style="max-height: 400px; overflow-y: auto;"></div>
+                    </div>
+                    <div id="fd-tab-notifications" class="farmer-tab-content" style="display: none;">
+                        <div id="fd-notifications-list" style="max-height: 400px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

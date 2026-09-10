@@ -1,0 +1,20 @@
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 373-894-356
+127.0.0.1 - - [15/Aug/2026 20:17:44] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:45] "GET /static/css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:46] "GET /static/js/app.js HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:47] "GET /me HTTP/1.1" 401 -
+127.0.0.1 - - [15/Aug/2026 20:17:48] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [15/Aug/2026 20:17:52] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:53] "GET /dashboard/summary HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:53] "GET /hq/warehouse HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:53] "GET /shops HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:53] "GET /hq/warehouse HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:53] "GET /clients HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:58] "GET /inventory/items HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:58] "GET /inventory/transactions HTTP/1.1" 200 -
+127.0.0.1 - - [15/Aug/2026 20:17:58] "GET /inventory/alerts HTTP/1.1" 200 -

@@ -1,0 +1,9 @@
+-keepattributes *Annotation*
+-keep class com.mobilemoney.gateway.** { *; }
+-dontwarn com.mobilemoney.gateway.**
+-keep class org.java_websocket.** { *; }
+-dontwarn org.java_websocket.**
+-keep class okhttp3.** { *; }
+-dontwarn okhttp3.**
+-keep class com.google.gson.** { *; }
+-dontwarn com.google.gson.**
