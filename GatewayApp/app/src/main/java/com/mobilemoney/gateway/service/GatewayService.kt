@@ -1,4 +1,4 @@
-package com.mobilemoney.gateway.service
+opackage com.mobilemoney.gateway.service
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -95,7 +95,7 @@ class GatewayService : Service() {
     }
 
     private fun startWebSocketConnection() {
-        val serverUri = URI.create("ws://YOUR_SERVER_IP:8000/gateway/ws/connect/gateway-1")
+        val serverUri = URI.create("wss://mobilink-app.onrender.com/gateway/ws/connect/gateway-1")
         webSocketClient = object : WebSocketClient(serverUri) {
             override fun onOpen(handshake: ServerHandshake?) {
                 Log.d(TAG, "WebSocket connected")

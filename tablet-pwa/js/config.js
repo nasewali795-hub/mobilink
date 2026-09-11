@@ -1,6 +1,6 @@
 const CONFIG = {
-    API_BASE_URL: 'http://localhost:8000',
-    WS_URL: 'ws://YOUR_SERVER_IP:8000/gateway/ws/tablet',
+    API_BASE_URL: 'https://mobilink-app.onrender.com',
+    WS_URL: 'wss://mobilink-app.onrender.com/gateway/ws/tablet',
     BOOTH_ID: null,
     RECONNECT_INTERVAL: 3000,
     HEARTBEAT_INTERVAL: 30000,
