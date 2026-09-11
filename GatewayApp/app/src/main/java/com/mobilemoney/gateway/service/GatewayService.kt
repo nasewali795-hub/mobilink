@@ -1,4 +1,4 @@
-opackage com.mobilemoney.gateway.service
+package com.mobilemoney.gateway.service
 
 import android.app.Notification
 import android.app.NotificationChannel
