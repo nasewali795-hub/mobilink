@@ -174,7 +174,7 @@ class GatewayService : Service() {
                     resetTransactionState()
                 }
                 "ping" -> {
-                    send("{ \"type\": \"pong\", \"timestamp\": ${System.currentTimeMillis()} }")
+                    webSocketClient.send("{ \"type\": \"pong\", \"timestamp\": ${System.currentTimeMillis()} }")
                 }
             }
         } catch (e: Exception) {
