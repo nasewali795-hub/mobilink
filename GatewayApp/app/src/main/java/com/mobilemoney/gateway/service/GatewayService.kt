@@ -12,6 +12,14 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.mobilemoney.gateway.R
 import com.mobilemoney.gateway.ui.GatewayActivity
+import com.mobilemoney.gateway.model.TransactionCommand
+import com.mobilemoney.gateway.model.USSDStep
+import com.mobilemoney.gateway.ussd.USSDExecutor
+import com.mobilemoney.gateway.ussd.USSDService
+import com.mobilemoney.gateway.util.DualSimManager
+import java.net.URI
+import org.java_websocket.client.WebSocketClient
+import org.java_websocket.handshake.ServerHandshake
 
 class GatewayService : Service() {
     private lateinit var webSocketClient: org.java_websocket.client.WebSocketClient

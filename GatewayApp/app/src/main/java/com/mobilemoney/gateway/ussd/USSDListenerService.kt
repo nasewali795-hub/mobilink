@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.view.accessibility.AccessibilityEvent
 import android.util.Log
+import com.mobilemoney.gateway.service.GatewayServiceHolder
 
 class USSDListenerService : AccessibilityService() {
     companion object {

@@ -68,7 +68,7 @@ object DualSimManager {
     fun getDefaultSubscriptionId(context: Context): Int {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             val subscriptionManager = context.getSystemService(android.content.Context.TELEPHONY_SUBSCRIPTION_SERVICE) as? SubscriptionManager
-            val defaultSub = subscriptionManager?.defaultSubscriptionId ?: SubscriptionManager.INVALID_SUBSCRIPTION_ID
+            val defaultSub = SubscriptionManager.getDefaultSubscriptionId()
             if (defaultSub != SubscriptionManager.INVALID_SUBSCRIPTION_ID) defaultSub else 0
         } else {
             0

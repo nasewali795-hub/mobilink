@@ -4,6 +4,8 @@ import android.content.Context
 import android.telephony.TelephonyManager
 import android.util.Log
 import java.lang.reflect.Method
+import android.os.Build
+import com.mobilemoney.gateway.service.GatewayServiceHolder
 
 object USSDService {
     private const val TAG = "USSDService"
