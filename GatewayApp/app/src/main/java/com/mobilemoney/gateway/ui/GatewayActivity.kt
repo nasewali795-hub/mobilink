@@ -1,5 +1,9 @@
 package com.mobilemoney.gateway.ui
 
+import androidx.core.app.ActivityCompat
+import android.Manifest
+import android.content.pm.PackageManager
+
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
@@ -28,6 +32,26 @@ class GatewayActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Request essential runtime permissions to prevent crashes
+        val permissions = mutableListOf(
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.RECEIVE_SMS,
+            Manifest.permission.READ_SMS,
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.CALL_PHONE
+        )
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        
+        val missingPermissions = permissions.filter { 
+            ActivityCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED 
+        }
+        
+        if (missingPermissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, missingPermissions.toTypedArray(), 100)
+        }
         setContentView(R.layout.activity_gateway)
 
         statusText = findViewById(R.id.statusText)
