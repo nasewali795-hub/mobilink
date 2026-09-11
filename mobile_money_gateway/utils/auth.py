@@ -8,7 +8,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_pin(pin: str) -> str:
-    return pwd_context.hash(pin)
+    return pwd_context.hash(pin[:72])
 
 
 def verify_pin(plain_pin: str, hashed_pin: str) -> bool:
