@@ -142,3 +142,37 @@ async def get_pending_simulatable(db: Session = Depends(get_db)):
         for t in transactions
     ]
 
+
+@router.post("/ussd/balance")
+async def check_ussd_balance(
+    gateway_id: str = "gateway-1",
+    network: str = "mtn",
+    sim_slot: str = "0",
+):
+    """
+    Sends a balance-check USSD command (*115# for MTN Zambia) to the Android GatewayApp.
+    The app must be running and connected via WebSocket for this to work.
+    """
+    command = {
+        "type": "execute_ussd",
+        "transaction_id": f"balance-check-{int(time.time())}",
+        "sim_slot": sim_slot,
+        "network": network,
+        "operation": "balance",
+        "customer_phone": "",
+        "amount": 0,
+        "pin": None,
+    }
+    sent = await manager.send_to_gateway(gateway_id, command)
+    if not sent:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Gateway '{gateway_id}' is not connected. Open the GatewayApp on your phone and tap 'Start Service'."
+        )
+    return {
+        "message": f"Balance check sent to gateway '{gateway_id}'",
+        "ussd_code": "*115#",
+        "sim_slot": sim_slot,
+        "network": network,
+        "note": "Watch your Android phone — the USSD dialog will appear with your MTN balance."
+    }

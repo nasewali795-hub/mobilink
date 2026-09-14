@@ -33,12 +33,15 @@ class ConnectionManager:
             except Exception:
                 self.disconnect_tablet(booth_id)
 
-    async def send_to_gateway(self, gateway_id: str, message: dict):
+    async def send_to_gateway(self, gateway_id: str, message: dict) -> bool:
         if gateway_id in self.gateway_connections:
             try:
                 await self.gateway_connections[gateway_id].send_json(message)
+                return True
             except Exception:
                 self.disconnect_gateway(gateway_id)
+                return False
+        return False
 
     async def broadcast_to_tablets(self, message: dict):
         disconnected = []

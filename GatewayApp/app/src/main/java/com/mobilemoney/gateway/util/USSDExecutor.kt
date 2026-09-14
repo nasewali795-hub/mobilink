@@ -8,26 +8,31 @@ object USSDExecutor {
     private const val TAG = "USSDExecutor"
 
     fun buildMTN(operation: String, slotIndex: String, phoneNumber: String, amount: Double, pin: String?): List<USSDStep> {
-        return if (operation.equals("cash_out", true)) {
-            mutableListOf(
-                USSDStep("ussd", "*111#", null, slotIndex),
-                USSDStep("ussd_response", null, "(?:Send Money|Transfer)"),
+        return when {
+            operation.equals("balance", true) -> mutableListOf(
+                // MTN Zambia balance check: dial *115# → single-step, response contains balance
+                USSDStep("ussd", "*115#", null, slotIndex),
+                USSDStep("ussd_response", null, "(?i)balance|kwacha|ZMW|K\\s*[\\d,]+|your.*balance|MoMo)")
+            )
+            operation.equals("cash_out", true) -> mutableListOf(
+                USSDStep("ussd", "*115#", null, slotIndex),
+                USSDStep("ussd_response", null, "(?:Send Money|Transfer|menu)"),
                 USSDStep("ussd_input", "1"),
-                USSDStep("ussd_response", null, "(?:Enter.*number|Phone)"),
+                USSDStep("ussd_response", null, "(?:Enter.*number|Phone|recipient)"),
                 USSDStep("ussd_input", phoneNumber),
-                USSDStep("ussd_response", null, "(?:amount|Enter)"),
+                USSDStep("ussd_response", null, "(?:amount|Enter|how much)"),
                 USSDStep("ussd_input", amount.toInt().toString()),
-                USSDStep("ussd_response", null, "(?:PIN|password)"),
+                USSDStep("ussd_response", null, "(?:PIN|password|secret)"),
                 USSDStep("ussd_input", pin.orEmpty())
             )
-        } else {
-            mutableListOf(
-                USSDStep("ussd", "*112#", null, slotIndex),
-                USSDStep("ussd_response", null, "(?:Receive Money|Deposit)"),
-                USSDStep("ussd_input", "1"),
-                USSDStep("ussd_response", null, "(?:Enter.*number|Phone)"),
+            else -> mutableListOf(
+                // cash_in / deposit
+                USSDStep("ussd", "*115#", null, slotIndex),
+                USSDStep("ussd_response", null, "(?:Receive Money|Deposit|menu)"),
+                USSDStep("ussd_input", "5"),
+                USSDStep("ussd_response", null, "(?:Enter.*number|Phone|agent)"),
                 USSDStep("ussd_input", phoneNumber),
-                USSDStep("ussd_response", null, "(?:amount|Enter)"),
+                USSDStep("ussd_response", null, "(?:amount|Enter|how much)"),
                 USSDStep("ussd_input", amount.toInt().toString())
             )
         }

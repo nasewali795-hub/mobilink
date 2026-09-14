@@ -2,25 +2,23 @@ package com.mobilemoney.gateway.ussd
 
 import com.mobilemoney.gateway.model.USSDStep
 
+/**
+ * Delegates USSD step building to the real implementation in util.USSDExecutor.
+ */
 object USSDExecutor {
     fun buildMTN(operation: String, slotIndex: String, phone: String, amount: Double, pin: String?): List<USSDStep> {
-        // Placeholder for MTN USSD steps
-        return emptyList()
+        return com.mobilemoney.gateway.util.USSDExecutor.buildMTN(operation, slotIndex, phone, amount, pin)
     }
 
     fun buildAirtel(operation: String, slotIndex: String, phone: String, amount: Double, pin: String?): List<USSDStep> {
-        // Placeholder for Airtel USSD steps
-        return emptyList()
+        return com.mobilemoney.gateway.util.USSDExecutor.buildAirtel(operation, slotIndex, phone, amount, pin)
     }
 
     fun buildZamtel(operation: String, slotIndex: String, phone: String, amount: Double, pin: String?): List<USSDStep> {
-        // Placeholder for Zamtel USSD steps
-        return emptyList()
+        return com.mobilemoney.gateway.util.USSDExecutor.buildZamtel(operation, slotIndex, phone, amount, pin)
     }
 
     fun matchesPattern(text: String, expectedPattern: String?): Boolean {
-        if (expectedPattern == null) return false
-        val regex = Regex(expectedPattern, RegexOption.IGNORE_CASE)
-        return regex.containsMatchIn(text)
+        return com.mobilemoney.gateway.util.USSDExecutor.matchesPattern(text, expectedPattern)
     }
 }

@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: mobilink-app
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python run_gateway.py
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./mobile_money_gateway.db
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GATEWAY_WS_SECRET
+        generateValue: true
+      - key: SIMULATION_MODE
+        value: "false"
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+    healthCheckPath: /health
