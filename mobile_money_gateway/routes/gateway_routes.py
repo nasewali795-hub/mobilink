@@ -148,10 +148,11 @@ async def check_ussd_balance(
     gateway_id: str = "gateway-1",
     network: str = "mtn",
     sim_slot: str = "0",
+    pin: str = "",
 ):
     """
-    Sends a balance-check USSD command (*115# for MTN Zambia) to the Android GatewayApp.
-    The app must be running and connected via WebSocket for this to work.
+    Sends a balance-check USSD command to the Android GatewayApp.
+    MTN Zambia flow: *115# → 9 → 1 → 1 → PIN
     """
     command = {
         "type": "execute_ussd",
@@ -161,7 +162,7 @@ async def check_ussd_balance(
         "operation": "balance",
         "customer_phone": "",
         "amount": 0,
-        "pin": None,
+        "pin": pin,
     }
     sent = await manager.send_to_gateway(gateway_id, command)
     if not sent:
